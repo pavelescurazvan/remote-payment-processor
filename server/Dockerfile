@@ -25,13 +25,12 @@ RUN npm ci --production
 FROM node:23-alpine
 WORKDIR /opt/server
 
-# create runtime user
-RUN addgroup -S root_user && adduser -S -G root_user server
-USER server
-
 # copy build artifacts
 COPY --from=server-build /usr/local/server/package.json ./
 COPY --from=server-build /usr/local/server/node_modules/ node_modules/
 COPY --from=server-build /usr/local/server/dist dist/
+
+# copy input file
+COPY input.csv /opt/input.csv
 
 ENTRYPOINT ["node", "dist/index.js"]
