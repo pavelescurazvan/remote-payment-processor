@@ -1,7 +1,7 @@
 FROM sqitch/sqitch
 
-COPY ./src ./src
-COPY ./sqitch.conf ./
-COPY ./sqitch.plan ./
+COPY db/src ./src
+COPY db/sqitch.conf ./
+COPY db/sqitch.plan ./
 
 ENTRYPOINT sqitch plan && sqitch deploy
