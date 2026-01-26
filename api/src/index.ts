@@ -1,21 +1,7 @@
-import { createApiServer } from "./create-api-server";
-
-const shutdownSignals = [
-  "SIGINT",
-  "SIGTERM",
-  "uncaughtException",
-  "unhandledRejection",
-];
+import { createPaymentProcessor } from "./create-payment-processor";
 
 (async () => {
-  const apiServer = createApiServer();
+  const paymentProcessor = createPaymentProcessor();
 
-  shutdownSignals.forEach((signal) =>
-    process.on(signal, async (error: Error) => {
-      console.log(`Caught signal: ${signal}`, error);
-      apiServer.stop();
-    })
-  );
-
-  apiServer.start();
+  paymentProcessor.run();
 })();
