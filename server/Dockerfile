@@ -1,18 +1,18 @@
 #### server-base ####
 FROM node:23-alpine AS server-base
-WORKDIR /usr/local/api
+WORKDIR /usr/local/server
 
 # setup package.json and node_modules
-COPY api/package.json api/package-lock.json ./
+COPY server/package.json server/package-lock.json ./
 RUN npm ci
 
 #### server-build ####
 FROM server-base AS server-build
-WORKDIR /usr/local/api
+WORKDIR /usr/local/server
 
 # copy necessary build files
-COPY api/src/ src/
-COPY api/tsconfig.json ./
+COPY server/src/ src/
+COPY server/tsconfig.json ./
 
 # audit and build
 RUN npm audit --production --audit-level=critical
@@ -23,15 +23,15 @@ RUN npm ci --production
 
 #### final stage ####
 FROM node:23-alpine
-WORKDIR /opt/api
+WORKDIR /opt/server
 
 # create runtime user
-RUN addgroup -S root_user && adduser -S -G root_user api
-USER api
+RUN addgroup -S root_user && adduser -S -G root_user server
+USER server
 
 # copy build artifacts
-COPY --from=server-build /usr/local/api/package.json ./
-COPY --from=server-build /usr/local/api/node_modules/ node_modules/
-COPY --from=server-build /usr/local/api/dist dist/
+COPY --from=server-build /usr/local/server/package.json ./
+COPY --from=server-build /usr/local/server/node_modules/ node_modules/
+COPY --from=server-build /usr/local/server/dist dist/
 
 ENTRYPOINT ["node", "dist/index.js"]

@@ -31,20 +31,17 @@ services:
       db:
         condition: service_healthy
 
-  api:
+  server:
     build:
       context: .
-      dockerfile: api/Dockerfile
-    container_name: pay-pro-api
+      dockerfile: server/Dockerfile
+    container_name: pay-pro-server
     environment:
-      - "PORT=8080"
       - "DB_HOST=pay-pro-postgres-db"
       - "DB_PORT=5432"
       - "DB_NAME=pay_pro"
       - "DB_USER=postgres"
       - "DB_PASSWORD=postgres"
-    ports:
-      - "8080:8080"
     depends_on:
       db-migration:
         condition: service_completed_successfully

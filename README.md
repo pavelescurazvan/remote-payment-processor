@@ -1,6 +1,6 @@
 # Remote Payment Processor
 
-A remote payment processor API with a PostgreSQL database.
+A remote payment processor with a PostgreSQL database.
 
 ## Getting Started
 
@@ -11,18 +11,11 @@ A remote payment processor API with a PostgreSQL database.
 
 ### Running the Application
 
-To start the entire stack (API, Database, and Migrations), run:
+To start the entire stack (Payment Processor, Database, and Migrations), run:
 
 ```bash
 docker-compose up --build
 ```
-
-The API will be available at `http://localhost:8080`.
-
-### Healthcheck
-
-You can verify that the API is running by visiting:
-`http://localhost:8080/healthcheck`
 
 ### Database
 
@@ -36,12 +29,12 @@ The database is exposed on port `5432` on the host machine.
 
 ## Development
 
-### API
+### Payment Processor
 
-The API is located in the `api/` directory.
+The payment processor is located in the `server/` directory.
 
 ```bash
-cd api
+cd server
 npm install
 npm run dev
 ```

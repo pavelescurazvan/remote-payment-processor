@@ -1,5 +1,5 @@
 /**
- * Creates the web server.
+ * Creates the payment processor.
  */
 export const createPaymentProcessor = () => {
   return {
