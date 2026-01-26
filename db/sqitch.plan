@@ -1,0 +1,4 @@
+%syntax-version=1.0.0
+%project=pay-pro
+
+V0_1__create_event_store_table 2026-01-27T13:00:00Z razvan <razvan.pavelescu> # Add event store table

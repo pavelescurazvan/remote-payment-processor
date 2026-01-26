@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:latest
+    container_name: pay-pro-postgres-db
+    environment:
+      - "POSTGRES_DB=pay_pro"
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_PASSWORD=postgres"
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db-migration:
+    build:
+      context: .
+      dockerfile: db/Dockerfile
+    container_name: pay-pro-db-migration
+    environment:
+      - "PGUSER=postgres"
+      - "PGPASSWORD=postgres"
+      - "PGHOST=pay-pro-postgres-db"
+      - "PGPORT=5432"
+      - "PGDATABASE=pay_pro"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: pay-pro-api
+    environment:
+      - "PORT=8080"
+      - "DB_HOST=pay-pro-postgres-db"
+      - "DB_PORT=5432"
+      - "DB_NAME=pay_pro"
+      - "DB_USER=postgres"
+      - "DB_PASSWORD=postgres"
+    ports:
+      - "8080:8080"
+    depends_on:
+      db-migration:
+        condition: service_completed_successfully
