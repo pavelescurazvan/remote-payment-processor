@@ -1,17 +1,11 @@
 import {
   TransactionType,
-  Deposit,
-  Withdrawal,
-  Dispute,
-  Rezolve,
-  Chargeback,
+  Transaction
 } from "../domain/types";
-
-type TransactionRecord = Deposit | Withdrawal | Dispute | Rezolve | Chargeback;
 
 export const createInputValidator = () => {
   return {
-    validator: ({ record }: { record: any }): TransactionRecord => {
+    validator: ({ record }: { record: any }): Transaction => {
       const type = record.type?.trim().toLowerCase();
       const client = parseInt(record.client.toString(), 10);
       const tx = parseInt(record.tx.toString(), 10);
@@ -39,7 +33,7 @@ export const createInputValidator = () => {
             client,
             tx,
             amount,
-          } as Deposit;
+          } as Transaction;
         }
 
         case TransactionType.WITHDRAWAL: {
@@ -52,7 +46,7 @@ export const createInputValidator = () => {
             client,
             tx,
             amount,
-          } as Withdrawal;
+          } as Transaction;
         }
 
         case TransactionType.DISPUTE:
@@ -60,21 +54,21 @@ export const createInputValidator = () => {
             type: TransactionType.DISPUTE,
             client,
             tx,
-          } as Dispute;
+          } as Transaction;
 
         case TransactionType.REZOLVE:
           return {
             type: TransactionType.REZOLVE,
             client,
             tx,
-          } as Rezolve;
+          } as Transaction;
 
-        case "chargeback":
+        case TransactionType.CHARGEBACK:
           return {
             type: TransactionType.REZOLVE,
             client,
             tx,
-          } as Chargeback;
+          } as Transaction;
 
         default:
           throw new Error(`Unknown transaction type: ${type}`);

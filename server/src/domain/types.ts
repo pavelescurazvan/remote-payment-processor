@@ -3,22 +3,20 @@ export enum TransactionType {
   WITHDRAWAL = "withdrawal",
   DISPUTE = "dispute",
   REZOLVE = "resolve",
+  CHARGEBACK = "chargeback",
 }
 
-interface Transaction {
+export interface Transaction {
   type: TransactionType;
   client: number;
   tx: number;
+  amount?: number;
 }
 
-export interface Deposit extends Transaction {
-  amount: number;
+export interface TransactionDto extends Transaction {
+  version: number;
+  available: number;
+  held: number;
+  total: number;
+  locked: number;
 }
-
-export interface Withdrawal extends Transaction {
-  amount: number;
-}
-
-export interface Dispute extends Transaction {}
-export interface Rezolve extends Transaction {}
-export interface Chargeback extends Transaction {}
