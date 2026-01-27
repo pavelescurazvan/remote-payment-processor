@@ -11,8 +11,7 @@ export const createInputValidator = () => {
     const raw = String(input ?? "").trim();
     if (!raw) throw new Error("Missing amount");
 
-    const normalized = raw.replace(",", ".");
-    const m = normalized.match(/^(\d+)(?:\.(\d+))?$/);
+    const m = raw.match(/^(\d+)(?:\.(\d+))?$/);
     if (!m) throw new Error(`Invalid amount format: ${input}`);
 
     const intPart = m[1];
