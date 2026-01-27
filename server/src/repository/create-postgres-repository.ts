@@ -1,6 +1,5 @@
 import { PoolClient } from "pg";
 import {TransactionDto} from "../domain/types";
-import {TransactionNotFound} from "../domain/Errors";
 
 /**
  * Creates a Postgres Repository
@@ -127,10 +126,7 @@ export const createPostgresRepository = () => {
         };
 
         if (!rows[0]) {
-          throw new TransactionNotFound({
-            client,
-            tx,
-          })
+          return undefined;
         }
 
         return {

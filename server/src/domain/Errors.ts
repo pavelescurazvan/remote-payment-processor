@@ -53,7 +53,6 @@ export class InvalidTransaction extends DomainError {
   }
 }
 
-
 export class TransactionNotFound extends DomainError {
   readonly code = "TRANSACTION_NOT_FOUND";
 
@@ -63,6 +62,22 @@ export class TransactionNotFound extends DomainError {
   }) {
     super(
       `Transaction not found: client ${params.client}, tx ${params.tx}`,
+      {
+        metadata: params,
+      }
+    );
+  }
+}
+
+export class InvalidWalletState extends DomainError {
+  readonly code = "INVALID_WALLET_STATE";
+
+  constructor(params: {
+    client: number;
+    tx: number;
+  }) {
+    super(
+      `Cannot process transaction due to invalid state: client ${params.client}, tx ${params.tx}`,
       {
         metadata: params,
       }

@@ -1,6 +1,7 @@
 import { Repository } from "../../repository/create-postgres-repository";
 import {Transaction, TransactionDto, TransactionType} from "../types";
 import {PoolClient} from "pg";
+import {TransactionNotFound} from "../Errors";
 
 /**
  * Registers a dispute transaction.
@@ -35,6 +36,13 @@ export const registerDispute = async ({
     client: transaction.client,
     tx: transaction.tx,
   });
+
+  if (!disputedTransaction) {
+    throw new TransactionNotFound({
+      client: transaction.client,
+      tx: transaction.tx,
+    })
+  }
 
   const updatedVersion = lastTransaction.version + 1;
   const updatedAvailable = lastTransaction.available - disputedTransaction.amount;
