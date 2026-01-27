@@ -35,8 +35,21 @@ export class InsufficientFundsError extends DomainError {
   }
 }
 
-export class InvalidTransaction extends DomainError {
-  readonly code = "INVALID_TRANSACTION";
+export class InvalidTransactionType extends DomainError {
+  readonly code = "INVALID_TRANSACTION_TYPE";
+
+  constructor(params: { client: number; type: string; tx: number }) {
+    super(
+      `Invalid transaction type: type ${params.type}, client ${params.client}, tx ${params.tx}`,
+      {
+        metadata: params,
+      }
+    );
+  }
+}
+
+export class InvalidTransactionPayload extends DomainError {
+  readonly code = "INVALID_TRANSACTION_PAYLOAD";
 
   constructor(params: {
     client: number;
@@ -45,7 +58,7 @@ export class InvalidTransaction extends DomainError {
     tx: number;
   }) {
     super(
-      `Invalid transaction: type ${params.type}, amount ${params.amount}`,
+      `Invalid transaction payload: type ${params.type}, client ${params.client}, tx ${params.tx}, amount ${params.amount}`,
       {
         metadata: params,
       }
@@ -56,12 +69,19 @@ export class InvalidTransaction extends DomainError {
 export class TransactionNotFound extends DomainError {
   readonly code = "TRANSACTION_NOT_FOUND";
 
-  constructor(params: {
-    client: number;
-    tx: number;
-  }) {
+  constructor(params: { client: number; tx: number }) {
+    super(`Transaction not found: client ${params.client}, tx ${params.tx}`, {
+      metadata: params,
+    });
+  }
+}
+
+export class InvalidWalletState extends DomainError {
+  readonly code = "INVALID_WALLET_STATE";
+
+  constructor(params: { client: number; tx: number }) {
     super(
-      `Transaction not found: client ${params.client}, tx ${params.tx}`,
+      `Cannot process transaction due to invalid state: client ${params.client}, tx ${params.tx}`,
       {
         metadata: params,
       }
@@ -69,15 +89,12 @@ export class TransactionNotFound extends DomainError {
   }
 }
 
-export class InvalidWalletState extends DomainError {
-  readonly code = "INVALID_WALLET_STATE";
+export class WalletLocked extends DomainError {
+  readonly code = "WALLET_LOCKED";
 
-  constructor(params: {
-    client: number;
-    tx: number;
-  }) {
+  constructor(params: { client: number; tx: number }) {
     super(
-      `Cannot process transaction due to invalid state: client ${params.client}, tx ${params.tx}`,
+      `Cannot process transaction, wallet is locked: client ${params.client}, tx ${params.tx}`,
       {
         metadata: params,
       }

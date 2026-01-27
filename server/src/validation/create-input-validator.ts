@@ -1,7 +1,4 @@
-import {
-  TransactionType,
-  Transaction
-} from "../domain/types";
+import { TransactionType, Transaction } from "../domain/types";
 
 export const createInputValidator = () => {
   return {

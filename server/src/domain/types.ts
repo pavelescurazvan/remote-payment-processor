@@ -18,5 +18,5 @@ export interface TransactionDto extends Transaction {
   available: number;
   held: number;
   total: number;
-  locked: number;
+  locked: boolean;
 }

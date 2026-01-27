@@ -1,7 +1,11 @@
 import { Repository } from "../../repository/create-postgres-repository";
-import {Transaction, TransactionDto, TransactionType} from "../types";
-import {PoolClient} from "pg";
-import {InvalidTransaction} from "../Errors";
+import { Transaction, TransactionDto, TransactionType } from "../types";
+import { PoolClient } from "pg";
+import {
+  InvalidTransactionPayload,
+  InvalidTransactionType,
+  WalletLocked,
+} from "../Errors";
 
 /**
  * Registers a deposit transaction.
@@ -15,30 +19,42 @@ export const registerDeposit = async ({
   pool,
   transaction,
 }: {
-  repository: Repository,
-  pool: PoolClient,
-  transaction: Transaction,
+  repository: Repository;
+  pool: PoolClient;
+  transaction: Transaction;
 }) => {
   if (transaction.type !== TransactionType.DEPOSIT) {
-    throw new Error(JSON.stringify({
-      message: "Invalid transaction type",
-      transaction,
-    }));
+    throw new InvalidTransactionType({
+      client: transaction.client,
+      type: transaction.type,
+      tx: transaction.tx,
+    });
   }
 
-  if (!transaction.amount || isNaN(transaction.amount) || transaction.amount <= 0) {
-    throw new InvalidTransaction({
+  if (
+    !transaction.amount ||
+    isNaN(transaction.amount) ||
+    transaction.amount <= 0
+  ) {
+    throw new InvalidTransactionPayload({
       client: transaction.client,
       type: transaction.type,
       amount: transaction.amount,
       tx: transaction.tx,
-    })
+    });
   }
 
   const lastTransaction = await repository.transactions.readLast({
     pool,
     client: transaction.client,
   });
+
+  if (lastTransaction.locked) {
+    throw new WalletLocked({
+      client: transaction.client,
+      tx: transaction.tx,
+    });
+  }
 
   const updatedVersion = lastTransaction.version + 1;
   const updatedAvailable = lastTransaction.available + transaction.amount;
@@ -51,10 +67,7 @@ export const registerDeposit = async ({
     held: lastTransaction.held,
     total: updatedTotal,
     locked: lastTransaction.locked,
-  }
+  };
 
-  await repository.transactions.append(
-    pool,
-    transactionDto
-  );
-}
+  await repository.transactions.append(pool, transactionDto);
+};

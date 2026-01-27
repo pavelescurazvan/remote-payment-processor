@@ -1,5 +1,5 @@
 import { PoolClient } from "pg";
-import {TransactionDto} from "../domain/types";
+import { TransactionDto } from "../domain/types";
 
 /**
  * Creates a Postgres Repository
@@ -9,8 +9,9 @@ export const createPostgresRepository = () => {
     transactions: {
       append: async (pool: PoolClient, transaction: TransactionDto) => {
         const { rows } = (await pool.query(
-          `INSERT INTO pay_pro.event_store (type, client, version, amount, tx, available, held, total, locked, created_at)
-            VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING id, created_at`,
+          `INSERT INTO
+            pay_pro.event_store (type, client, version, amount, tx, available, held, total, locked, created_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW()) RETURNING id, created_at`,
           [
             transaction.type,
             transaction.client,
@@ -39,7 +40,7 @@ export const createPostgresRepository = () => {
         };
       },
       readLast: async ({
-                         pool,
+        pool,
         client,
       }: {
         pool: PoolClient;
@@ -47,9 +48,9 @@ export const createPostgresRepository = () => {
       }) => {
         const { rows } = (await pool.query(
           `SELECT
-          id, type, client, version, amount, tx, available, held, total, locked
-          FROM pay_pro.event_store WHERE client = $1
-          ORDER BY version DESC LIMIT 1`,
+            id, type, client, version, amount, tx, available, held, total, locked
+            FROM pay_pro.event_store WHERE client = $1
+            ORDER BY version DESC LIMIT 1`,
           [client]
         )) as {
           rows: {
@@ -62,7 +63,7 @@ export const createPostgresRepository = () => {
             available: number;
             held: number;
             total: number;
-            locked: number;
+            locked: boolean;
           }[];
         };
 
@@ -77,7 +78,7 @@ export const createPostgresRepository = () => {
             available: 0,
             held: 0,
             total: 0,
-            locked: 0,
+            locked: false,
           };
         }
 
@@ -91,11 +92,11 @@ export const createPostgresRepository = () => {
           available: Number(rows[0].available),
           held: Number(rows[0].held),
           total: Number(rows[0].total),
-          locked: Number(rows[0].locked),
+          locked: rows[0].locked,
         };
       },
       get: async ({
-                    pool,
+        pool,
         client,
         tx,
       }: {
@@ -105,10 +106,10 @@ export const createPostgresRepository = () => {
       }) => {
         const { rows } = (await pool.query(
           `SELECT
-           id, type, client, version, amount, tx, available, held, total, locked
-           FROM pay_pro.event_store
-           WHERE client = $1 and tx = $2
-           ORDER BY version DESC LIMIT 1`,
+             id, type, client, version, amount, tx, available, held, total, locked
+             FROM pay_pro.event_store
+             WHERE client = $1 and tx = $2
+             ORDER BY version DESC LIMIT 1`,
           [client, tx]
         )) as {
           rows: {
