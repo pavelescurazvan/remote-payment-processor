@@ -1,6 +1,31 @@
 import { TransactionType, Transaction } from "../domain/types";
 
 export const createInputValidator = () => {
+
+  /**
+   * Parse monetary input into a fixed-point integer (scale = 10^4).
+   * Trims whitespace, accepts decimals, truncates beyond 4 places.
+   * @param input
+   */
+  const parseAmountScaled = (input: any): number => {
+    const raw = String(input ?? "").trim();
+    if (!raw) throw new Error("Missing amount");
+
+    const normalized = raw.replace(",", ".");
+    const m = normalized.match(/^(\d+)(?:\.(\d+))?$/);
+    if (!m) throw new Error(`Invalid amount format: ${input}`);
+
+    const intPart = m[1];
+    const fracPart = (m[2] ?? "").slice(0, 4).padEnd(4, "0");
+
+    const scaled = Number(intPart + fracPart);
+    if (!Number.isSafeInteger(scaled) || scaled <= 0) {
+      throw new Error(`Invalid amount: ${input}`);
+    }
+
+    return scaled;
+  };
+
   return {
     validator: ({ record }: { record: any }): Transaction => {
       const type = record.type?.trim().toLowerCase();
@@ -21,11 +46,7 @@ export const createInputValidator = () => {
 
       switch (type) {
         case TransactionType.DEPOSIT: {
-          const parsedAmount = parseInt(record.tx.toString(), 10);
-          const scaledAmount = parsedAmount * 10000;
-          if (isNaN(parsedAmount) || parsedAmount <= 0) {
-            throw new Error(`Invalid amount for withdrawal: ${record.amount}`);
-          }
+          const scaledAmount = parseAmountScaled(record.amount);
           return {
             type: TransactionType.DEPOSIT,
             client,
@@ -35,11 +56,7 @@ export const createInputValidator = () => {
         }
 
         case TransactionType.WITHDRAWAL: {
-          const parsedAmount = parseInt(record.tx.toString(), 10);
-          const scaledAmount = parsedAmount * 10000;
-          if (isNaN(parsedAmount) || parsedAmount <= 0) {
-            throw new Error(`Invalid amount for withdrawal: ${record.amount}`);
-          }
+          const scaledAmount = parseAmountScaled(record.amount);
           return {
             type: TransactionType.WITHDRAWAL,
             client,
@@ -64,7 +81,7 @@ export const createInputValidator = () => {
 
         case TransactionType.CHARGEBACK:
           return {
-            type: TransactionType.REZOLVE,
+            type: TransactionType.CHARGEBACK,
             client,
             tx,
           } as Transaction;
@@ -75,3 +92,4 @@ export const createInputValidator = () => {
     },
   };
 };
+
