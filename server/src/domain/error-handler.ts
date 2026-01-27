@@ -1,11 +1,13 @@
+import { Transaction } from "./types";
+
 /**
  * Wraps a function, catches, and handles any errors that occur during execution
  * @param fn
  * @param input
  */
 export const errorHandler = async (
-  fn: (input: any) => Promise<void>,
-  input: any
+  fn: (input: Transaction) => Promise<void>,
+  input: Transaction
 ) => {
   try {
     await fn(input);

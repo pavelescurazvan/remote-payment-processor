@@ -1,17 +1,28 @@
 import { TransactionType, Transaction } from "../domain/types";
 
 export const createInputValidator = () => {
+  type CsvRecord = {
+    type: string;
+    client: string;
+    tx: string;
+    amount?: string;
+  };
+
   /**
    * Parse monetary input into a fixed-point integer (scale = 10^4).
    * Trims whitespace, accepts decimals, truncates beyond 4 places.
    * @param input
    */
-  const parseAmountScaled = (input: any): number => {
+  const parseAmountScaled = (input?: string): number => {
     const raw = String(input ?? "").trim();
-    if (!raw) {throw new Error("Missing amount");}
+    if (!raw) {
+      throw new Error("Missing amount");
+    }
 
     const m = raw.match(/^(\d+)(?:\.(\d+))?$/);
-    if (!m) {throw new Error(`Invalid amount format: ${input}`);}
+    if (!m) {
+      throw new Error(`Invalid amount format: ${input}`);
+    }
 
     const intPart = m[1];
     const fracPart = (m[2] ?? "").slice(0, 4).padEnd(4, "0");
@@ -25,7 +36,7 @@ export const createInputValidator = () => {
   };
 
   return {
-    validator: ({ record }: { record: any }): Transaction => {
+    validator: ({ record }: { record: CsvRecord }): Transaction => {
       const type = record.type?.trim().toLowerCase();
       const client = parseInt(record.client.toString(), 10);
       const tx = parseInt(record.tx.toString(), 10);
