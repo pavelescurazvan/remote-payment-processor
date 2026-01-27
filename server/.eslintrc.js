@@ -81,6 +81,7 @@ module.exports = {
 
     "@typescript-eslint/no-explicit-any": ["error"],
     "@typescript-eslint/no-unnecessary-type-assertion": "error",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
 
     "@typescript-eslint/await-thenable": "error",
   },

@@ -8,10 +8,10 @@ export const createInputValidator = () => {
    */
   const parseAmountScaled = (input: any): number => {
     const raw = String(input ?? "").trim();
-    if (!raw) throw new Error("Missing amount");
+    if (!raw) {throw new Error("Missing amount");}
 
     const m = raw.match(/^(\d+)(?:\.(\d+))?$/);
-    if (!m) throw new Error(`Invalid amount format: ${input}`);
+    if (!m) {throw new Error(`Invalid amount format: ${input}`);}
 
     const intPart = m[1];
     const fracPart = (m[2] ?? "").slice(0, 4).padEnd(4, "0");
