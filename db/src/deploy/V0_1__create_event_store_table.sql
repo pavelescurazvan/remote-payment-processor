@@ -4,9 +4,14 @@ CREATE TABLE pay_pro.event_store (
   id BIGSERIAL PRIMARY KEY,
   type VARCHAR NOT NULL,
   client INTEGER NOT NULL,
-  version BIGINT NOT NULL,
   tx INTEGER NOT NULL,
   amount BIGINT NOT NULL,
+  version BIGINT NOT NULL,
+  available BIGINT NOT NULL,
+  held BIGINT NOT NULL,
+  total BIGINT NOT NULL,
+  locked boolean NOT NULL,
+
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
 
   CONSTRAINT event_store_client_version_uk UNIQUE (client, version),
