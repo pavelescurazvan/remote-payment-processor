@@ -1,7 +1,7 @@
 import { Repository } from "../../repository/create-postgres-repository";
 import { Transaction, TransactionDto, TransactionType } from "../types";
 import { PoolClient } from "pg";
-import { InvalidTransactionType, TransactionNotFound } from "../Errors";
+import {InvalidTransactionType, InvalidWalletState, TransactionNotFound} from "../Errors";
 
 /**
  * Registers a dispute transaction.
@@ -40,6 +40,13 @@ export const registerDispute = async ({
 
   if (!disputedTransaction) {
     throw new TransactionNotFound({
+      client: transaction.client,
+      tx: transaction.tx,
+    });
+  }
+
+  if (lastTransaction.available < disputedTransaction.amount) {
+    throw new InvalidWalletState({
       client: transaction.client,
       tx: transaction.tx,
     });
