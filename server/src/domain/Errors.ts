@@ -1,6 +1,14 @@
+export enum DomainErrorCodes {
+  INSUFFICIENT_FUNDS = "INSUFFICIENT_FUNDS",
+  INVALID_TRANSACTION_TYPE = "INVALID_TRANSACTION_TYPE",
+  INVALID_TRANSACTION_PAYLOAD = "INVALID_TRANSACTION_PAYLOAD",
+  TRANSACTION_NOT_FOUND = "TRANSACTION_NOT_FOUND",
+  INVALID_WALLET_STATE = "INVALID_WALLET_STATE",
+  WALLET_LOCKED = "WALLET_LOCKED",
+}
+
 export abstract class DomainError extends Error {
   abstract readonly code: string;
-  readonly cause?: unknown;
   readonly metadata?: Record<string, unknown>;
 
   protected constructor(
@@ -12,22 +20,23 @@ export abstract class DomainError extends Error {
   ) {
     super(message);
     this.name = this.constructor.name;
-    this.cause = options?.cause;
     this.metadata = options?.metadata;
   }
+
 }
 
 export class InsufficientFundsError extends DomainError {
-  readonly code = "INSUFFICIENT_FUNDS";
+  readonly code = DomainErrorCodes.INSUFFICIENT_FUNDS;
 
   constructor(params: {
+    type: string;
     client: number;
     available: number;
     attempted: number;
     tx: number;
   }) {
     super(
-      `Insufficient funds: attempted ${params.attempted}, available ${params.available}`,
+      `Insufficient funds: attempted ${params.type} ${params.attempted} from client ${params.client}, available ${params.available}`,
       {
         metadata: params,
       }
@@ -36,7 +45,7 @@ export class InsufficientFundsError extends DomainError {
 }
 
 export class InvalidTransactionType extends DomainError {
-  readonly code = "INVALID_TRANSACTION_TYPE";
+  readonly code = DomainErrorCodes.INVALID_TRANSACTION_TYPE;
 
   constructor(params: { client: number; type: string; tx: number }) {
     super(
@@ -49,7 +58,7 @@ export class InvalidTransactionType extends DomainError {
 }
 
 export class InvalidTransactionPayload extends DomainError {
-  readonly code = "INVALID_TRANSACTION_PAYLOAD";
+  readonly code = DomainErrorCodes.INVALID_TRANSACTION_PAYLOAD;
 
   constructor(params: {
     client: number;
@@ -67,7 +76,7 @@ export class InvalidTransactionPayload extends DomainError {
 }
 
 export class TransactionNotFound extends DomainError {
-  readonly code = "TRANSACTION_NOT_FOUND";
+  readonly code = DomainErrorCodes.TRANSACTION_NOT_FOUND;
 
   constructor(params: { client: number; tx: number }) {
     super(`Transaction not found: client ${params.client}, tx ${params.tx}`, {
@@ -77,7 +86,7 @@ export class TransactionNotFound extends DomainError {
 }
 
 export class InvalidWalletState extends DomainError {
-  readonly code = "INVALID_WALLET_STATE";
+  readonly code = DomainErrorCodes.INVALID_WALLET_STATE;
 
   constructor(params: { client: number; tx: number }) {
     super(
@@ -90,7 +99,7 @@ export class InvalidWalletState extends DomainError {
 }
 
 export class WalletLocked extends DomainError {
-  readonly code = "WALLET_LOCKED";
+  readonly code = DomainErrorCodes.WALLET_LOCKED;
 
   constructor(params: { client: number; tx: number }) {
     super(

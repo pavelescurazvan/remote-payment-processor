@@ -7,6 +7,7 @@ import { registerDispute } from "./commands/register-dispute";
 import { registerResolve } from "./commands/register-resolve";
 import { registerChargeback } from "./commands/register-chargeback";
 import { InvalidTransactionType } from "./Errors";
+import { errorHandler } from "./error-handler";
 
 export const createTransactionsProcessor = ({
   repository,
@@ -15,62 +16,70 @@ export const createTransactionsProcessor = ({
   repository: Repository;
   pool: Pool;
 }) => {
+  /**
+   * Processes a single transaction
+   * @param transaction
+   */
+  const processTransaction = async (transaction: Transaction) => {
+    console.log(
+      `Processing ${transaction.type} transaction ${transaction.tx} for ${transaction.client} with amount ${transaction.amount}`
+    );
+
+    switch (transaction.type) {
+      case TransactionType.DEPOSIT: {
+        await registerDeposit({
+          repository,
+          pool,
+          transaction,
+        });
+        break;
+      }
+      case TransactionType.WITHDRAWAL: {
+        await registerWithdrawal({
+          repository,
+          pool,
+          transaction,
+        });
+        break;
+      }
+      case TransactionType.DISPUTE: {
+        await registerDispute({
+          repository,
+          pool,
+          transaction,
+        });
+        break;
+      }
+      case TransactionType.REZOLVE: {
+        await registerResolve({
+          repository,
+          pool,
+          transaction,
+        });
+        break;
+      }
+      case TransactionType.CHARGEBACK: {
+        await registerChargeback({
+          repository,
+          pool,
+          transaction,
+        });
+        break;
+      }
+      default: {
+        throw new InvalidTransactionType({
+          client: transaction.client,
+          type: transaction.type,
+          tx: transaction.tx,
+        });
+      }
+    }
+  }
+
   return {
     process: async ({ transactions }: { transactions: Transaction[] }) => {
       for (const transaction of transactions) {
-        console.log(
-          `Processing ${transaction.type} transaction ${transaction.tx} for ${transaction.client} with amount ${transaction.amount}`
-        );
-
-        switch (transaction.type) {
-          case TransactionType.DEPOSIT: {
-            await registerDeposit({
-              repository,
-              pool,
-              transaction,
-            });
-            break;
-          }
-          case TransactionType.WITHDRAWAL: {
-            await registerWithdrawal({
-              repository,
-              pool,
-              transaction,
-            });
-            break;
-          }
-          case TransactionType.DISPUTE: {
-            await registerDispute({
-              repository,
-              pool,
-              transaction,
-            });
-            break;
-          }
-          case TransactionType.REZOLVE: {
-            await registerResolve({
-              repository,
-              pool,
-              transaction,
-            });
-            break;
-          }
-          case TransactionType.CHARGEBACK: {
-            await registerChargeback({
-              repository,
-              pool,
-              transaction,
-            });
-            break;
-          }
-          default: {
-            throw new InvalidTransactionType({
-              client: transaction.client,
-              type: transaction.type,
-              tx: transaction.tx,
-            });
-          }
-        }
+        await errorHandler(processTransaction, transaction)
       }
     },
   };

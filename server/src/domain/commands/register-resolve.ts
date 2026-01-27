@@ -61,5 +61,15 @@ export const registerResolve = async ({
     locked: lastTransaction.locked,
   };
 
-  await repository.transactions.append(pool, transactionDto);
+  try {
+    await repository.transactions.append(pool, transactionDto);
+  } catch (e) {
+    // Idempotency
+    if (e?.code === "23505" && e?.constraint === "event_store_client_tx_type_uk") {
+      console.log(`Transaction ${transaction.type} with tx ${transaction.tx} for client ${transaction.client} already processed. Skipping.`);
+      return;
+    }
+
+    throw e;
+  }
 };
