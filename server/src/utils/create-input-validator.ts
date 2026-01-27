@@ -1,7 +1,6 @@
 import { TransactionType, Transaction } from "../domain/types";
 
 export const createInputValidator = () => {
-
   /**
    * Parse monetary input into a fixed-point integer (scale = 10^4).
    * Trims whitespace, accepts decimals, truncates beyond 4 places.
@@ -69,6 +68,7 @@ export const createInputValidator = () => {
             type: TransactionType.DISPUTE,
             client,
             tx,
+            amount: 0,
           } as Transaction;
 
         case TransactionType.REZOLVE:
@@ -76,6 +76,7 @@ export const createInputValidator = () => {
             type: TransactionType.REZOLVE,
             client,
             tx,
+            amount: 0,
           } as Transaction;
 
         case TransactionType.CHARGEBACK:
@@ -83,6 +84,7 @@ export const createInputValidator = () => {
             type: TransactionType.CHARGEBACK,
             client,
             tx,
+            amount: 0,
           } as Transaction;
 
         default:
@@ -91,4 +93,3 @@ export const createInputValidator = () => {
     },
   };
 };
-

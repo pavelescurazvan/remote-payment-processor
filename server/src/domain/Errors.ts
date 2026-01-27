@@ -22,7 +22,6 @@ export abstract class DomainError extends Error {
     this.name = this.constructor.name;
     this.metadata = options?.metadata;
   }
-
 }
 
 export class InsufficientFundsError extends DomainError {

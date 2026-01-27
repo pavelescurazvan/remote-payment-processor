@@ -1,11 +1,7 @@
 import { Repository } from "../../repository/create-postgres-repository";
 import { Transaction, TransactionDto } from "../types";
 import { Pool } from "pg";
-import {
-  InsufficientFundsError,
-  InvalidTransactionPayload,
-  WalletLocked,
-} from "../Errors";
+import { InsufficientFundsError, WalletLocked } from "../Errors";
 
 /**
  * Registers a withdrawal transaction.
@@ -23,15 +19,6 @@ export const registerWithdrawal = async ({
   pool: Pool;
   transaction: Transaction;
 }) => {
-  if (!transaction.amount) {
-    throw new InvalidTransactionPayload({
-      client: transaction.client,
-      type: transaction.type,
-      amount: transaction.amount,
-      tx: transaction.tx,
-    });
-  }
-
   const lastTransaction = await repository.transactions.readLast({
     pool,
     client: transaction.client,
@@ -67,15 +54,5 @@ export const registerWithdrawal = async ({
     locked: lastTransaction.locked,
   };
 
-  try {
-    await repository.transactions.append(pool, transactionDto);
-  } catch (e) {
-    // Idempotency
-    if (e?.code === "23505" && e?.constraint === "event_store_client_tx_type_uk") {
-      console.log(`Transaction ${transaction.type} with tx ${transaction.tx} for client ${transaction.client} already processed. Skipping.`);
-      return;
-    }
-
-    throw e;
-  }
+  await repository.transactions.append(pool, transactionDto);
 };

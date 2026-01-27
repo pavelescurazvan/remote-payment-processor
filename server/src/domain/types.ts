@@ -10,7 +10,7 @@ export interface Transaction {
   type: TransactionType;
   client: number;
   tx: number;
-  amount?: number;
+  amount: number;
 }
 
 export interface TransactionDto extends Transaction {

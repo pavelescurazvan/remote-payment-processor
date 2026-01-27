@@ -74,12 +74,12 @@ export const createTransactionsProcessor = ({
         });
       }
     }
-  }
+  };
 
   return {
     process: async ({ transactions }: { transactions: Transaction[] }) => {
       for (const transaction of transactions) {
-        await errorHandler(processTransaction, transaction)
+        await errorHandler(processTransaction, transaction);
       }
     },
   };

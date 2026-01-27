@@ -1,10 +1,7 @@
 import { Repository } from "../../repository/create-postgres-repository";
 import { Transaction, TransactionDto } from "../types";
 import { Pool } from "pg";
-import {
-  InvalidWalletState,
-  TransactionNotFound,
-} from "../Errors";
+import { InvalidWalletState, TransactionNotFound } from "../Errors";
 
 /**
  * Registers a chargeback transaction.
@@ -63,15 +60,5 @@ export const registerChargeback = async ({
     locked: updatedLocked,
   };
 
-  try {
-    await repository.transactions.append(pool, transactionDto);
-  } catch (e) {
-    // Idempotency
-    if (e?.code === "23505" && e?.constraint === "event_store_client_tx_type_uk") {
-      console.log(`Transaction ${transaction.type} with tx ${transaction.tx} for client ${transaction.client} already processed. Skipping.`);
-      return;
-    }
-
-    throw e;
-  }
+  await repository.transactions.append(pool, transactionDto);
 };
