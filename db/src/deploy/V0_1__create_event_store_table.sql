@@ -13,3 +13,5 @@ CREATE TABLE pay_pro.event_store (
   CONSTRAINT event_store_client_tx_type_uk UNIQUE (client, tx, type),
   CONSTRAINT event_store_type_chk CHECK (type IN ('deposit','withdrawal','dispute','resolve','chargeback'))
 );
+
+CREATE INDEX event_store_client_idx ON pay_pro.event_store(client);

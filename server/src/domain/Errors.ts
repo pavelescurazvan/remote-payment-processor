@@ -41,11 +41,28 @@ export class InvalidTransaction extends DomainError {
   constructor(params: {
     client: number;
     type: string;
-    amount: number;
+    amount?: number | string;
     tx: number;
   }) {
     super(
       `Invalid transaction: type ${params.type}, amount ${params.amount}`,
+      {
+        metadata: params,
+      }
+    );
+  }
+}
+
+
+export class TransactionNotFound extends DomainError {
+  readonly code = "TRANSACTION_NOT_FOUND";
+
+  constructor(params: {
+    client: number;
+    tx: number;
+  }) {
+    super(
+      `Transaction not found: client ${params.client}, tx ${params.tx}`,
       {
         metadata: params,
       }

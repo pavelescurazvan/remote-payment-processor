@@ -1,5 +1,6 @@
 import { PoolClient } from "pg";
 import {TransactionDto} from "../domain/types";
+import {TransactionNotFound} from "../domain/Errors";
 
 /**
  * Creates a Postgres Repository
@@ -7,7 +8,7 @@ import {TransactionDto} from "../domain/types";
 export const createPostgresRepository = () => {
   return {
     transactions: {
-      append: async (transaction: TransactionDto, pool: PoolClient) => {
+      append: async (pool: PoolClient, transaction: TransactionDto) => {
         const { rows } = (await pool.query(
           `INSERT INTO pay_pro.event_store (type, client, version, amount, tx, available, held, total, locked, created_at)
             VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING id, created_at`,
@@ -39,15 +40,18 @@ export const createPostgresRepository = () => {
         };
       },
       readLast: async ({
-        clientId,
-        pool,
+                         pool,
+        client,
       }: {
-        clientId: number;
         pool: PoolClient;
+        client: number;
       }) => {
         const { rows } = (await pool.query(
-          `SELECT id, type, client, version, amount, tx, available, held, total, locked FROM pay_pro.event_store WHERE client = $1 ORDER BY version DESC LIMIT 1`,
-          [clientId]
+          `SELECT
+          id, type, client, version, amount, tx, available, held, total, locked
+          FROM pay_pro.event_store WHERE client = $1
+          ORDER BY version DESC LIMIT 1`,
+          [client]
         )) as {
           rows: {
             id: number;
@@ -76,6 +80,57 @@ export const createPostgresRepository = () => {
             total: 0,
             locked: 0,
           };
+        }
+
+        return {
+          id: rows[0].id,
+          type: Number(rows[0].type),
+          client: Number(rows[0].client),
+          version: Number(rows[0].version),
+          amount: Number(rows[0].amount),
+          tx: Number(rows[0].tx),
+          available: Number(rows[0].available),
+          held: Number(rows[0].held),
+          total: Number(rows[0].total),
+          locked: Number(rows[0].locked),
+        };
+      },
+      get: async ({
+                    pool,
+        client,
+        tx,
+      }: {
+        pool: PoolClient;
+        client: number;
+        tx: number;
+      }) => {
+        const { rows } = (await pool.query(
+          `SELECT
+           id, type, client, version, amount, tx, available, held, total, locked
+           FROM pay_pro.event_store
+           WHERE client = $1 and tx = $2
+           ORDER BY version DESC LIMIT 1`,
+          [client, tx]
+        )) as {
+          rows: {
+            id: number;
+            type: string;
+            client: number;
+            version: number;
+            amount: number;
+            tx: number;
+            available: number;
+            held: number;
+            total: number;
+            locked: number;
+          }[];
+        };
+
+        if (!rows[0]) {
+          throw new TransactionNotFound({
+            client,
+            tx,
+          })
         }
 
         return {

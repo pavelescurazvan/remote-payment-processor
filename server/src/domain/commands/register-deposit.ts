@@ -26,15 +26,7 @@ export const registerDeposit = async ({
     }));
   }
 
-  // TODO: isNan should not happen this deep in domain
-  if (!transaction.amount || isNaN(transaction.amount)) {
-    throw new Error(JSON.stringify({
-      message: "Invalid transaction type",
-      transaction,
-    }));
-  }
-
-  if (transaction.amount <= 0) {
+  if (!transaction.amount || isNaN(transaction.amount) || transaction.amount <= 0) {
     throw new InvalidTransaction({
       client: transaction.client,
       type: transaction.type,
@@ -44,8 +36,8 @@ export const registerDeposit = async ({
   }
 
   const lastTransaction = await repository.transactions.readLast({
-    clientId: transaction.client,
-    pool
+    pool,
+    client: transaction.client,
   });
 
   const updatedVersion = lastTransaction.version + 1;
@@ -62,6 +54,7 @@ export const registerDeposit = async ({
   }
 
   await repository.transactions.append(
-    transactionDto, pool
+    pool,
+    transactionDto
   );
 }
