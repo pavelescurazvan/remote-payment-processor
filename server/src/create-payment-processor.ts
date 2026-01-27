@@ -22,6 +22,7 @@ export const createPaymentProcessor = () => {
           columns: true,
           trim: true,
           skip_empty_lines: true,
+          relax_column_count: true,
         })
       );
 
