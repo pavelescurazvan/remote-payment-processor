@@ -32,6 +32,7 @@ export const createPaymentProcessor = () => {
       for await (const record of parser) {
         try {
           const transaction = validator({ record });
+
           console.log("Processed transaction:", transaction);
         } catch (error) {
           console.error("Validation error:", error.message);
