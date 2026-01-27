@@ -1,0 +1,31 @@
+import path from "path";
+import fs from "fs";
+import { parse } from "csv-parse";
+
+export const createInputParsers = () => {
+  return {
+    parseInput: async () => {
+      const csvFilePath = path.resolve(process.cwd(), "..", "input.csv");
+
+      if (!fs.existsSync(csvFilePath)) {
+        throw new Error(`Input file not found: ${csvFilePath}`);
+      }
+
+      const parser = fs.createReadStream(csvFilePath).pipe(
+        parse({
+          columns: true,
+          trim: true,
+          skip_empty_lines: true,
+          relax_column_count: true,
+        })
+      );
+
+      const results = [];
+      for await (const record of parser) {
+        results.push(record);
+      }
+
+      return results;
+    },
+  };
+};

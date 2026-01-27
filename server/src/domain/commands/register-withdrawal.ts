@@ -1,6 +1,6 @@
 import { Repository } from "../../repository/create-postgres-repository";
 import { Transaction, TransactionDto, TransactionType } from "../types";
-import { PoolClient } from "pg";
+import { Pool } from "pg";
 import {
   InsufficientFundsError,
   InvalidTransactionPayload,
@@ -21,7 +21,7 @@ export const registerWithdrawal = async ({
   transaction,
 }: {
   repository: Repository;
-  pool: PoolClient;
+  pool: Pool;
   transaction: Transaction;
 }) => {
   if (transaction.type !== TransactionType.WITHDRAWAL) {

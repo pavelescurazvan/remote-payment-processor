@@ -1,7 +1,7 @@
-import { createPaymentProcessor } from "./create-payment-processor";
+import { createService } from "./create-service";
 
 (async () => {
-  const paymentProcessor = createPaymentProcessor();
+  const paymentProcessor = createService();
 
   paymentProcessor.run();
 })();

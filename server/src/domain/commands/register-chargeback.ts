@@ -1,6 +1,6 @@
 import { Repository } from "../../repository/create-postgres-repository";
 import { Transaction, TransactionDto, TransactionType } from "../types";
-import { PoolClient } from "pg";
+import { Pool } from "pg";
 import {
   InvalidTransactionType,
   InvalidWalletState,
@@ -21,7 +21,7 @@ export const registerChargeback = async ({
   transaction,
 }: {
   repository: Repository;
-  pool: PoolClient;
+  pool: Pool;
   transaction: Transaction;
 }) => {
   if (transaction.type !== TransactionType.CHARGEBACK) {

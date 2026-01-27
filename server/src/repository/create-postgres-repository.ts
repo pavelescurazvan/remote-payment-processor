@@ -1,4 +1,4 @@
-import { PoolClient } from "pg";
+import { Pool } from "pg";
 import { TransactionDto } from "../domain/types";
 
 /**
@@ -7,7 +7,7 @@ import { TransactionDto } from "../domain/types";
 export const createPostgresRepository = () => {
   return {
     transactions: {
-      append: async (pool: PoolClient, transaction: TransactionDto) => {
+      append: async (pool: Pool, transaction: TransactionDto) => {
         const { rows } = (await pool.query(
           `INSERT INTO
             pay_pro.event_store (type, client, version, amount, tx, available, held, total, locked, created_at)
@@ -39,13 +39,7 @@ export const createPostgresRepository = () => {
           createdAt: rows[0].created_at,
         };
       },
-      readLast: async ({
-        pool,
-        client,
-      }: {
-        pool: PoolClient;
-        client: number;
-      }) => {
+      readLast: async ({ pool, client }: { pool: Pool; client: number }) => {
         const { rows } = (await pool.query(
           `SELECT
             id, type, client, version, amount, tx, available, held, total, locked
@@ -100,7 +94,7 @@ export const createPostgresRepository = () => {
         client,
         tx,
       }: {
-        pool: PoolClient;
+        pool: Pool;
         client: number;
         tx: number;
       }) => {
