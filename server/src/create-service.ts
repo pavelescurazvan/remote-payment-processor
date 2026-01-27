@@ -8,9 +8,9 @@ import { createPostgresRepository } from "./repository/create-postgres-repositor
  * Creates the payment processor.
  */
 export const createService = () => {
-  const { validator } = createInputValidator();
-
   const { parseInput } = createInputParsers();
+
+  const { validator } = createInputValidator();
 
   const { process } = createTransactionsProcessor({
     repository: createPostgresRepository(),
@@ -19,15 +19,10 @@ export const createService = () => {
 
   return {
     run: async () => {
-      console.log("Service started");
-
       const input = await parseInput();
-
-      const transactions = input.map(validator);
+      const transactions = input.map((record) => validator({ record }));
 
       await process({ transactions });
-
-      console.log("Service finished");
     },
   };
 };

@@ -1,8 +1,7 @@
 import { Repository } from "../../repository/create-postgres-repository";
-import { Transaction, TransactionDto, TransactionType } from "../types";
+import { Transaction, TransactionDto } from "../types";
 import { Pool } from "pg";
 import {
-  InvalidTransactionType,
   InvalidWalletState,
   TransactionNotFound,
 } from "../Errors";
@@ -24,14 +23,6 @@ export const registerChargeback = async ({
   pool: Pool;
   transaction: Transaction;
 }) => {
-  if (transaction.type !== TransactionType.CHARGEBACK) {
-    throw new InvalidTransactionType({
-      client: transaction.client,
-      type: transaction.type,
-      tx: transaction.tx,
-    });
-  }
-
   const lastTransaction = await repository.transactions.readLast({
     pool,
     client: transaction.client,

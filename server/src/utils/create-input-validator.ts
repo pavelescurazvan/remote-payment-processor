@@ -21,28 +21,30 @@ export const createInputValidator = () => {
 
       switch (type) {
         case TransactionType.DEPOSIT: {
-          const amount = parseFloat(record.amount);
-          if (isNaN(amount)) {
-            throw new Error(`Invalid amount for deposit: ${record.amount}`);
+          const parsedAmount = parseInt(record.tx.toString(), 10);
+          const scaledAmount = parsedAmount * 10000;
+          if (isNaN(parsedAmount) || parsedAmount <= 0) {
+            throw new Error(`Invalid amount for withdrawal: ${record.amount}`);
           }
           return {
             type: TransactionType.DEPOSIT,
             client,
             tx,
-            amount,
+            amount: scaledAmount,
           } as Transaction;
         }
 
         case TransactionType.WITHDRAWAL: {
-          const amount = parseFloat(record.amount);
-          if (isNaN(amount)) {
+          const parsedAmount = parseInt(record.tx.toString(), 10);
+          const scaledAmount = parsedAmount * 10000;
+          if (isNaN(parsedAmount) || parsedAmount <= 0) {
             throw new Error(`Invalid amount for withdrawal: ${record.amount}`);
           }
           return {
             type: TransactionType.WITHDRAWAL,
             client,
             tx,
-            amount,
+            amount: scaledAmount,
           } as Transaction;
         }
 

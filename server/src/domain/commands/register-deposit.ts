@@ -1,9 +1,8 @@
 import { Repository } from "../../repository/create-postgres-repository";
-import { Transaction, TransactionDto, TransactionType } from "../types";
+import { Transaction, TransactionDto } from "../types";
 import { Pool } from "pg";
 import {
   InvalidTransactionPayload,
-  InvalidTransactionType,
   WalletLocked,
 } from "../Errors";
 
@@ -23,19 +22,7 @@ export const registerDeposit = async ({
   pool: Pool;
   transaction: Transaction;
 }) => {
-  if (transaction.type !== TransactionType.DEPOSIT) {
-    throw new InvalidTransactionType({
-      client: transaction.client,
-      type: transaction.type,
-      tx: transaction.tx,
-    });
-  }
-
-  if (
-    !transaction.amount ||
-    isNaN(transaction.amount) ||
-    transaction.amount <= 0
-  ) {
+  if (!transaction.amount) {
     throw new InvalidTransactionPayload({
       client: transaction.client,
       type: transaction.type,
