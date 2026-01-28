@@ -6,7 +6,7 @@ import { Validator } from "./create-input-validator";
 export const createInputParsers = ({ validator }: Validator) => {
   return {
     parseInput: async function* (filePath: string) {
-      const csvFilePath = path.resolve(process.cwd(), "..", filePath);
+      const csvFilePath = path.resolve(process.cwd(), filePath);
 
       if (!fs.existsSync(csvFilePath)) {
         throw new Error(`Input file not found: ${csvFilePath}`);

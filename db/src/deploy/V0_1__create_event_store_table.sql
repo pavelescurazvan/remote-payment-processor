@@ -4,7 +4,7 @@ CREATE TABLE pay_pro.event_store (
   id BIGSERIAL PRIMARY KEY,
   type VARCHAR NOT NULL,
   client INTEGER NOT NULL,
-  tx INTEGER NOT NULL,
+  tx BIGINT NOT NULL,
   amount BIGINT NOT NULL,
   version BIGINT NOT NULL,
   available BIGINT NOT NULL,

@@ -31,6 +31,7 @@ Navigate to the server directory and install dependencies:
 ```bash
 cd server
 npm install
+npm run build
 ```
 
 ### 3. Run the Application
@@ -38,11 +39,11 @@ npm install
 Process a CSV file by providing it as the first argument:
 
 ```bash
-npm run dev input.csv > output.csv
+npm run dev ../input.csv > output.csv
 ```
 
 ```bash
-node dist/index.js input.csv > output.csv
+node dist/index.js ../input.csv > output.csv
 ```
 
 Or with a custom path:
