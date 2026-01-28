@@ -25,6 +25,7 @@ resolve, 1, 21,
 deposit, 2, 22, 30.0000
 dispute, 2, 22,
 chargeback, 2, 22,
+deposit, 2, 22, 33.0000
 dispute, 3, 9,
 resolve, 3, 9,
 deposit, 6, 1000, 1500.0000

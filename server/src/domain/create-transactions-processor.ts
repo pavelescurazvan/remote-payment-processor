@@ -8,7 +8,6 @@ import { registerResolve } from "./commands/register-resolve";
 import { registerChargeback } from "./commands/register-chargeback";
 import { InvalidTransactionType } from "./Errors";
 import { errorHandler } from "./error-handler";
-import { logger } from "../utils/logger";
 
 export const createTransactionsProcessor = ({
   repository,
@@ -22,10 +21,6 @@ export const createTransactionsProcessor = ({
    * @param transaction
    */
   const processTransaction = async (transaction: Transaction) => {
-    logger(
-      `Processing ${transaction.type} transaction ${transaction.tx} for ${transaction.client} with amount ${transaction.amount}`
-    );
-
     switch (transaction.type) {
       case TransactionType.DEPOSIT: {
         await registerDeposit({
