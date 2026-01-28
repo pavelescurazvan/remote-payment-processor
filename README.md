@@ -140,3 +140,11 @@ The PostgreSQL database is exposed on:
 - **Event Store**: PostgreSQL table with unique constraint on (client, tx) for idempotency
 - **Idempotency**: Duplicate transaction IDs are ignored due to unique constraint
 - **Precision**: All amounts use 4 decimal place precision (stored as integers, e.g., 10000 = 1.0000)
+
+## Use of AI Declaration
+
+**AI Assistance:**
+- Claude Agent was used to write streamer, parser, amount conversion from JS number to *10000 with precision and conversion handling, tests and documentation
+
+**Important Note:**
+- Application design, coding patterns, business logic, architectural decisions, and database design were created and written by the project author
