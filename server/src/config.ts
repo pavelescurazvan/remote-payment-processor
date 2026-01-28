@@ -4,7 +4,7 @@ import "dotenv/config";
 const rawEnv = process.env;
 
 export const config = {
-  dbHost: rawEnv.DB_HOST ?? "postgres",
+  dbHost: rawEnv.DB_HOST ?? "localhost",
   dbName: rawEnv.DB_NAME ?? "pay_pro",
   dbUser: rawEnv.DB_USER ?? "postgres",
   dbPassword: rawEnv.DB_PASSWORD ?? "postgres",

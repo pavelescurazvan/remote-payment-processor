@@ -145,7 +145,7 @@ The PostgreSQL database is exposed on:
 ## Use of AI Declaration
 
 **AI Assistance:**
-- Claude Agent was used to write streamer, parser, amount conversion from JS number to *10000 with precision and conversion handling, tests and documentation
+- Claude Agent was used to write streamer, parser, converting user input into fixed-precision integers (scaled by 10000) with strict validation precision and conversion handling, tests and documentation
 
 **Important Note:**
 - Application design, coding patterns, business logic, architectural decisions, and database design were created and written by the project author
