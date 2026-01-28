@@ -1,4 +1,5 @@
 import { Transaction } from "./types";
+import { logger } from "../utils/logger";
 
 /**
  * Wraps a function, catches, and handles any errors that occur during execution
@@ -17,13 +18,13 @@ export const errorHandler = async (
       e?.code === "23505" &&
       e?.constraint === "event_store_client_tx_type_uk"
     ) {
-      console.log(
+      logger(
         `Transaction ${JSON.stringify(input)} already processed. Skipping.`
       );
       return;
     }
 
-    console.error(
+    logger(
       `Error processing transaction ${JSON.stringify(input)}: ${e.message}`
     );
   }

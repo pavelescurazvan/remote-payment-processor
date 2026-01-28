@@ -9,4 +9,6 @@ export const config = {
   dbUser: rawEnv.DB_USER ?? "postgres",
   dbPassword: rawEnv.DB_PASSWORD ?? "postgres",
   dbPort: rawEnv.DB_PORT ? Number(rawEnv.DB_PORT) : 5432,
+
+  enableLogs: rawEnv.LOGS ?? "no",
 };

@@ -13,17 +13,21 @@ export const createService = () => {
 
   const { validator } = createInputValidator();
 
+  const pool = getConnectionPool();
   const { process } = createTransactionsProcessor({
     repository: createPostgresRepository(),
-    pool: getConnectionPool(),
+    pool,
   });
 
   const { printOutput } = createRetrieveOutput({
     repository: createPostgresRepository(),
-    pool: getConnectionPool(),
+    pool,
   });
 
   return {
+    /**
+     * Runs the payment processor against an input CSV.
+     */
     run: async () => {
       const input = await parseInput();
       const transactions = input.map((record) => validator({ record }));
@@ -31,6 +35,13 @@ export const createService = () => {
       const clients = await process({ transactions });
 
       await printOutput({ clients });
+    },
+
+    /**
+     * Shuts down the payment processor.
+     */
+    shutDown: async () => {
+      await pool.end();
     },
   };
 };
