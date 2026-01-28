@@ -111,7 +111,9 @@ The PostgreSQL database is exposed on:
 
 ## Architecture
 
-- **Event Sourcing**: All transactions are stored as immutable events
-- **Event Store**: PostgreSQL table with unique constraint on (client, tx)
-- **Idempotency**: Duplicate transaction IDs are ignored
-- **Precision**: All amounts use 4 decimal place precision (stored as integers)
+- **Event Sourcing with Materialized State**: All transactions are stored as immutable events in an append-only event store
+- **Cumulative Ledger**: Each new event computes and stores the cumulative state (`available`, `held`, `total`, `locked`) based on the previous event, like a ledger
+- **Efficient Reads**: To retrieve the current state of a client's account, only the last event needs to be read (no replaying required)
+- **Event Store**: PostgreSQL table with unique constraint on (client, tx) for idempotency
+- **Idempotency**: Duplicate transaction IDs are ignored due to unique constraint
+- **Precision**: All amounts use 4 decimal place precision (stored as integers, e.g., 10000 = 1.0000)
