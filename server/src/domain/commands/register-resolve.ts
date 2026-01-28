@@ -54,7 +54,7 @@ export const registerResolve = async ({
     version: updatedVersion,
     available: updatedAvailable,
     held: updatedHeld,
-    total: lastTransaction.available,
+    total: lastTransaction.total,
     locked: lastTransaction.locked,
   };
 

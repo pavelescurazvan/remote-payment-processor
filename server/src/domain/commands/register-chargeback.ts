@@ -56,7 +56,7 @@ export const registerChargeback = async ({
     version: updatedVersion,
     available: updatedAvailable,
     held: updatedHeld,
-    total: lastTransaction.available,
+    total: lastTransaction.total,
     locked: updatedLocked,
   };
 
