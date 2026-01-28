@@ -39,6 +39,13 @@ describe("Payment Processor Integration Tests", () => {
     await pool.query("TRUNCATE TABLE pay_pro.event_store");
   });
 
+  // Helper to convert array to async iterable
+  async function* toAsyncIterable<T>(items: T[]): AsyncIterable<T> {
+    for (const item of items) {
+      yield item;
+    }
+  }
+
   describe("Happy Path Scenarios", () => {
     it("should process deposits correctly", async () => {
       const transactions: Transaction[] = [
@@ -46,7 +53,7 @@ describe("Payment Processor Integration Tests", () => {
         { type: TransactionType.DEPOSIT, client: 1, tx: 2, amount: 500000 },
       ];
 
-      await processor.process({ transactions });
+      await processor.process({ transactions: toAsyncIterable(transactions) });
 
       const result = await pool.query(
         "SELECT * FROM pay_pro.event_store WHERE client = $1 ORDER BY tx",
@@ -65,7 +72,7 @@ describe("Payment Processor Integration Tests", () => {
         { type: TransactionType.WITHDRAWAL, client: 2, tx: 11, amount: 250000 },
       ];
 
-      await processor.process({ transactions });
+      await processor.process({ transactions: toAsyncIterable(transactions) });
 
       const result = await pool.query(
         "SELECT * FROM pay_pro.event_store WHERE client = $1 ORDER BY tx",
@@ -84,7 +91,7 @@ describe("Payment Processor Integration Tests", () => {
         { type: TransactionType.REZOLVE, client: 3, tx: 20, amount: 0 },
       ];
 
-      await processor.process({ transactions });
+      await processor.process({ transactions: toAsyncIterable(transactions) });
 
       const result = await pool.query(
         "SELECT * FROM pay_pro.event_store WHERE client = $1 ORDER BY version",
@@ -104,7 +111,7 @@ describe("Payment Processor Integration Tests", () => {
         { type: TransactionType.CHARGEBACK, client: 4, tx: 30, amount: 0 },
       ];
 
-      await processor.process({ transactions });
+      await processor.process({ transactions: toAsyncIterable(transactions) });
 
       const result = await pool.query(
         "SELECT * FROM pay_pro.event_store WHERE client = $1 ORDER BY version",
@@ -124,7 +131,7 @@ describe("Payment Processor Integration Tests", () => {
         { type: TransactionType.DEPOSIT, client: 12, tx: 102, amount: 3000000 },
       ];
 
-      await processor.process({ transactions });
+      await processor.process({ transactions: toAsyncIterable(transactions) });
 
       const result = await pool.query(
         "SELECT DISTINCT client FROM pay_pro.event_store WHERE client IN (10, 11, 12) ORDER BY client"
@@ -261,7 +268,7 @@ describe("Payment Processor Integration Tests", () => {
 
       expect(records.length).toBeGreaterThan(0);
 
-      await processor.process({ transactions: records });
+      await processor.process({ transactions: toAsyncIterable(records) });
 
       const result = await pool.query(
         "SELECT COUNT(DISTINCT client) as client_count FROM pay_pro.event_store"
@@ -278,7 +285,7 @@ describe("Payment Processor Integration Tests", () => {
         { type: TransactionType.DEPOSIT, client: 50, tx: 500, amount: 1000000 },
       ];
 
-      await processor.process({ transactions });
+      await processor.process({ transactions: toAsyncIterable(transactions) });
 
       const result = await pool.query(
         "SELECT * FROM pay_pro.event_store WHERE client = $1 AND tx = $2",
