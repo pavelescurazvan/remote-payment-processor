@@ -101,6 +101,9 @@ Tests include:
 ## How It Works
 
 1. **Input**: Reads CSV file with columns: `type, client, tx, amount`
+   - `client` - Valid u16 client ID (0-65535)
+   - `tx` - Valid u32 transaction ID (0-4294967295)
+   - `amount` - Decimal value with precision up to 4 decimal places
 2. **Processing**: Handles transaction types:
    - `deposit` - Credits client account
    - `withdrawal` - Debits client account

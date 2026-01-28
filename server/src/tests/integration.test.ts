@@ -236,6 +236,52 @@ describe("Payment Processor Integration Tests", () => {
 
       expect(() => validator({ record })).toThrow("Invalid amount format");
     });
+
+    it("should throw error for client ID exceeding u16 max (65535)", () => {
+      const record = {
+        type: "deposit",
+        client: "65536",
+        tx: "1",
+        amount: "100.0000",
+      };
+
+      expect(() => validator({ record })).toThrow("must be u16: 0-65535");
+    });
+
+    it("should throw error for transaction ID exceeding u32 max (4294967295)", () => {
+      const record = {
+        type: "deposit",
+        client: "1",
+        tx: "4294967296",
+        amount: "100.0000",
+      };
+
+      expect(() => validator({ record })).toThrow("must be u32: 0-4294967295");
+    });
+
+    it("should accept maximum valid u16 client ID (65535)", () => {
+      const record = {
+        type: "deposit",
+        client: "65535",
+        tx: "1",
+        amount: "100.0000",
+      };
+
+      const transaction = validator({ record });
+      expect(transaction.client).toBe(65535);
+    });
+
+    it("should accept maximum valid u32 transaction ID (4294967295)", () => {
+      const record = {
+        type: "deposit",
+        client: "1",
+        tx: "4294967295",
+        amount: "100.0000",
+      };
+
+      const transaction = validator({ record });
+      expect(transaction.tx).toBe(4294967295);
+    });
   });
 
   describe("Full CSV Processing", () => {
