@@ -5,6 +5,7 @@ export enum DomainErrorCodes {
   TRANSACTION_NOT_FOUND = "TRANSACTION_NOT_FOUND",
   INVALID_WALLET_STATE = "INVALID_WALLET_STATE",
   WALLET_LOCKED = "WALLET_LOCKED",
+  WALLET_NOT_FOUND = "WALLET_NOT_FOUND",
 }
 
 export abstract class DomainError extends Error {
@@ -103,6 +104,19 @@ export class WalletLocked extends DomainError {
   constructor(params: { client: number; tx: number }) {
     super(
       `Cannot process transaction, wallet is locked: client ${params.client}, tx ${params.tx}`,
+      {
+        metadata: params,
+      }
+    );
+  }
+}
+
+export class WalletNotFound extends DomainError {
+  readonly code = DomainErrorCodes.WALLET_NOT_FOUND;
+
+  constructor(params: { client: number }) {
+    super(
+      `Cannot retrieve wallet, wallet is not found: client ${params.client}`,
       {
         metadata: params,
       }

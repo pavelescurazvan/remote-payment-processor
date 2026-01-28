@@ -137,7 +137,12 @@ describe("Payment Processor Integration Tests", () => {
 
   describe("CSV Validation", () => {
     it("should validate deposit transaction with amount", () => {
-      const record = { type: "deposit", client: "1", tx: "1", amount: "100.0000" };
+      const record = {
+        type: "deposit",
+        client: "1",
+        tx: "1",
+        amount: "100.0000",
+      };
       const transaction = validator({ record });
 
       expect(transaction.type).toBe(TransactionType.DEPOSIT);
@@ -147,7 +152,12 @@ describe("Payment Processor Integration Tests", () => {
     });
 
     it("should validate withdrawal transaction with amount", () => {
-      const record = { type: "withdrawal", client: "2", tx: "2", amount: "50.5000" };
+      const record = {
+        type: "withdrawal",
+        client: "2",
+        tx: "2",
+        amount: "50.5000",
+      };
       const transaction = validator({ record });
 
       expect(transaction.type).toBe(TransactionType.WITHDRAWAL);
@@ -193,13 +203,23 @@ describe("Payment Processor Integration Tests", () => {
     });
 
     it("should throw error for missing client", () => {
-      const record = { type: "deposit", client: "", tx: "1", amount: "100.0000" };
+      const record = {
+        type: "deposit",
+        client: "",
+        tx: "1",
+        amount: "100.0000",
+      };
 
       expect(() => validator({ record })).toThrow("Invalid client ID");
     });
 
     it("should throw error for missing transaction id", () => {
-      const record = { type: "deposit", client: "1", tx: "", amount: "100.0000" };
+      const record = {
+        type: "deposit",
+        client: "1",
+        tx: "",
+        amount: "100.0000",
+      };
 
       expect(() => validator({ record })).toThrow("Invalid transaction ID");
     });
@@ -270,7 +290,12 @@ describe("Payment Processor Integration Tests", () => {
     });
 
     it("should handle amounts with decimal precision", () => {
-      const record = { type: "deposit", client: "1", tx: "1", amount: "123.4567" };
+      const record = {
+        type: "deposit",
+        client: "1",
+        tx: "1",
+        amount: "123.4567",
+      };
       const transaction = validator({ record });
 
       // 123.4567 should be truncated to 123.4567 (4 decimal places)

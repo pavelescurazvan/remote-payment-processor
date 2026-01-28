@@ -78,9 +78,14 @@ export const createTransactionsProcessor = ({
 
   return {
     process: async ({ transactions }: { transactions: Transaction[] }) => {
+      const clientIds = new Set<number>();
+
       for (const transaction of transactions) {
         await errorHandler(processTransaction, transaction);
+        clientIds.add(transaction.client);
       }
+
+      return clientIds;
     },
   };
 };

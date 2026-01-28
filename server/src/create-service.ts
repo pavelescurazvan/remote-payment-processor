@@ -3,6 +3,7 @@ import { createInputParsers } from "./utils/create-input-parsers";
 import { createTransactionsProcessor } from "./domain/create-transactions-processor";
 import { getConnectionPool } from "./db-utils";
 import { createPostgresRepository } from "./repository/create-postgres-repository";
+import { createRetrieveOutput } from "./domain/create-output-retriever";
 
 /**
  * Creates the payment processor.
@@ -17,12 +18,19 @@ export const createService = () => {
     pool: getConnectionPool(),
   });
 
+  const { printOutput } = createRetrieveOutput({
+    repository: createPostgresRepository(),
+    pool: getConnectionPool(),
+  });
+
   return {
     run: async () => {
       const input = await parseInput();
       const transactions = input.map((record) => validator({ record }));
 
-      await process({ transactions });
+      const clients = await process({ transactions });
+
+      await printOutput({ clients });
     },
   };
 };
