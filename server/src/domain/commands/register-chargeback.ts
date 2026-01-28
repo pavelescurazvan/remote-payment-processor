@@ -63,17 +63,16 @@ export const registerChargeback = async ({
   }
 
   const updatedVersion = lastTransaction.version + 1;
-  const updatedAvailable =
-    lastTransaction.available - disputedTransaction.amount;
   const updatedHeld = lastTransaction.held - disputedTransaction.amount;
+  const updatedTotal = lastTransaction.total - disputedTransaction.amount;
   const updatedLocked = true;
 
   const transactionDto: TransactionDto = {
     ...transaction,
     version: updatedVersion,
-    available: updatedAvailable,
+    available: lastTransaction.available,
     held: updatedHeld,
-    total: lastTransaction.total,
+    total: updatedTotal,
     locked: updatedLocked,
   };
 

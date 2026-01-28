@@ -122,8 +122,8 @@ describe("Dispute Flow Integration Tests", () => {
       expect(Number(result.rows[1].total)).toBe(2000000);
       expect(result.rows[1].locked).toBe(false);
 
-      // After chargeback: available=-200 (withdrawn), held=0, total=0, locked=true
-      expect(Number(result.rows[2].available)).toBe(-2000000);
+      // After chargeback: available=0 (unchanged), held=0 (200 removed), total=0 (200 removed), locked=true
+      expect(Number(result.rows[2].available)).toBe(0);
       expect(Number(result.rows[2].held)).toBe(0);
       expect(Number(result.rows[2].total)).toBe(0);
       expect(result.rows[2].locked).toBe(true);
@@ -239,13 +239,13 @@ describe("Dispute Flow Integration Tests", () => {
       expect(result.rows[2].locked).toBe(true);
     });
 
-    it("should allow disputes on locked account (edge case)", async () => {
+    it("should allow dispute on locked account when sufficient available funds", async () => {
       const transactions: Transaction[] = [
         { type: TransactionType.DEPOSIT, client: 9, tx: 1, amount: 1000000 },
         { type: TransactionType.DEPOSIT, client: 9, tx: 2, amount: 500000 },
         { type: TransactionType.DISPUTE, client: 9, tx: 1, amount: 0 },
-        { type: TransactionType.CHARGEBACK, client: 9, tx: 1, amount: 0 }, // Locks account
-        { type: TransactionType.DISPUTE, client: 9, tx: 2, amount: 0 }, // Should still work
+        { type: TransactionType.CHARGEBACK, client: 9, tx: 1, amount: 0 }, // Locks account, available=50, held=0, total=50
+        { type: TransactionType.DISPUTE, client: 9, tx: 2, amount: 0 }, // Should succeed - available=50, need 50
       ];
 
       await processor.process({ transactions: toAsyncIterable(transactions) });
@@ -254,9 +254,12 @@ describe("Dispute Flow Integration Tests", () => {
         "SELECT * FROM pay_pro.event_store WHERE client = 9 ORDER BY version"
       );
 
-      // Should have all 5 transactions - disputes are allowed on locked accounts
+      // Should have all 5 transactions - disputes are allowed on locked accounts if funds available
       expect(result.rows).toHaveLength(5);
       expect(result.rows[4].type).toBe("dispute");
+      expect(result.rows[4].locked).toBe(true);
+      expect(Number(result.rows[4].available)).toBe(0);
+      expect(Number(result.rows[4].held)).toBe(500000);
     });
   });
 
