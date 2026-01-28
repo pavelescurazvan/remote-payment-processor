@@ -130,6 +130,10 @@ The PostgreSQL database is exposed on:
 - **Efficient Reads**: To retrieve the current state of a client's account, only the last event needs to be read (no replaying required)
 - **Sequential Processing**: Transactions are processed sequentially (one at a time) to ensure chronological ordering and maintain consistency. Each CSV transaction is treated as a *mission-critical task* that must be executed in the exact order it appears in the file
 - **Streaming Architecture**: CSV records are streamed through memory rather than loaded upfront, enabling efficient processing of large files while maintaining sequential execution guarantees
+- **Concurrency Control**: Database-level constraints protect against race conditions:
+  - `UNIQUE (client, version)` - Prevents duplicate versions for the same client, ensuring version monotonicity even if multiple processes attempt concurrent writes
+  - `UNIQUE (client, tx, type)` - Ensures transaction idempotency, preventing duplicate transaction processing
+  - The application is designed for single-process sequential execution, but database constraints provide a safety net against accidental concurrent access
 - **Event Store**: PostgreSQL table with unique constraint on (client, tx) for idempotency
 - **Idempotency**: Duplicate transaction IDs are ignored due to unique constraint
 - **Precision**: All amounts use 4 decimal place precision (stored as integers, e.g., 10000 = 1.0000)
