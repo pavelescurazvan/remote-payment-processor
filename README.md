@@ -35,15 +35,29 @@ npm install
 
 ### 3. Run the Application
 
-Process the `input.csv` file located in the project root:
+Process a CSV file by providing it as the first argument:
 
 ```bash
-npm run dev
+npm run dev input.csv > output.csv
+```
+
+```bash
+node dist/index.js input.csv > output.csv
+```
+
+Or with a custom path:
+
+```bash
+npm run dev /path/to/transactions.csv > output.csv
+```
+
+```bash
+node dist/index.js /path/to/transactions.csv > output.csv
 ```
 
 This will:
-- Read transactions from `../input.csv`
-- Process all transactions (deposits, withdrawals, disputes, resolves, chargebacks)
+- Stream transactions from the specified CSV file
+- Process all transactions sequentially in chronological order (deposits, withdrawals, disputes, resolves, chargebacks)
 - Output client account states in CSV format to the console
 
 **Expected Output Format:**
@@ -114,6 +128,8 @@ The PostgreSQL database is exposed on:
 - **Event Sourcing with Materialized State**: All transactions are stored as immutable events in an append-only event store
 - **Cumulative Ledger**: Each new event computes and stores the cumulative state (`available`, `held`, `total`, `locked`) based on the previous event, like a ledger
 - **Efficient Reads**: To retrieve the current state of a client's account, only the last event needs to be read (no replaying required)
+- **Sequential Processing**: Transactions are processed sequentially (one at a time) to ensure chronological ordering and maintain consistency. Each CSV transaction is treated as a *mission-critical task* that must be executed in the exact order it appears in the file
+- **Streaming Architecture**: CSV records are streamed through memory rather than loaded upfront, enabling efficient processing of large files while maintaining sequential execution guarantees
 - **Event Store**: PostgreSQL table with unique constraint on (client, tx) for idempotency
 - **Idempotency**: Duplicate transaction IDs are ignored due to unique constraint
 - **Precision**: All amounts use 4 decimal place precision (stored as integers, e.g., 10000 = 1.0000)
