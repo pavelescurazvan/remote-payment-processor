@@ -6,6 +6,8 @@ export enum DomainErrorCodes {
   INVALID_WALLET_STATE = "INVALID_WALLET_STATE",
   WALLET_LOCKED = "WALLET_LOCKED",
   WALLET_NOT_FOUND = "WALLET_NOT_FOUND",
+  CANNOT_DISPUTE_NON_DEPOSIT = "CANNOT_DISPUTE_NON_DEPOSIT",
+  TRANSACTION_NOT_DISPUTED = "TRANSACTION_NOT_DISPUTED",
 }
 
 export abstract class DomainError extends Error {
@@ -117,6 +119,32 @@ export class WalletNotFound extends DomainError {
   constructor(params: { client: number }) {
     super(
       `Cannot retrieve wallet, wallet is not found: client ${params.client}`,
+      {
+        metadata: params,
+      }
+    );
+  }
+}
+
+export class CannotDisputeNonDeposit extends DomainError {
+  readonly code = DomainErrorCodes.CANNOT_DISPUTE_NON_DEPOSIT;
+
+  constructor(params: { client: number; tx: number; type: string }) {
+    super(
+      `Cannot dispute non-deposit transaction: client ${params.client}, tx ${params.tx}, type ${params.type}`,
+      {
+        metadata: params,
+      }
+    );
+  }
+}
+
+export class TransactionNotDisputed extends DomainError {
+  readonly code = DomainErrorCodes.TRANSACTION_NOT_DISPUTED;
+
+  constructor(params: { client: number; tx: number }) {
+    super(
+      `Cannot resolve/chargeback transaction that is not disputed: client ${params.client}, tx ${params.tx}`,
       {
         metadata: params,
       }

@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { TransactionDto } from "../domain/types";
+import {TransactionDto, TransactionType} from "../domain/types";
 
 /**
  * Creates a Postgres Repository
@@ -78,7 +78,7 @@ export const createPostgresRepository = () => {
 
         return {
           id: rows[0].id,
-          type: Number(rows[0].type),
+          type: rows[0].type as TransactionType,
           client: Number(rows[0].client),
           version: Number(rows[0].version),
           amount: Number(rows[0].amount),
@@ -126,7 +126,7 @@ export const createPostgresRepository = () => {
 
         return {
           id: rows[0].id,
-          type: Number(rows[0].type),
+          type: rows[0].type as TransactionType,
           client: Number(rows[0].client),
           version: Number(rows[0].version),
           amount: Number(rows[0].amount),
@@ -136,6 +136,27 @@ export const createPostgresRepository = () => {
           total: Number(rows[0].total),
           locked: Number(rows[0].locked),
         };
+      },
+      hasDispute: async ({
+        pool,
+        client,
+        tx,
+      }: {
+        pool: Pool;
+        client: number;
+        tx: number;
+      }) => {
+        const { rows } = (await pool.query(
+          `SELECT EXISTS(
+             SELECT 1 FROM pay_pro.event_store
+             WHERE client = $1 AND tx = $2 AND type = 'dispute'
+           ) as exists`,
+          [client, tx]
+        )) as {
+          rows: { exists: boolean }[];
+        };
+
+        return rows[0]?.exists ?? false;
       },
     },
   };
