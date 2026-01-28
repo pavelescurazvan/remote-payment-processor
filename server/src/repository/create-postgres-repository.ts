@@ -89,7 +89,7 @@ export const createPostgresRepository = () => {
           locked: rows[0].locked,
         };
       },
-      get: async ({
+      getDeposit: async ({
         pool,
         client,
         tx,
@@ -102,9 +102,9 @@ export const createPostgresRepository = () => {
           `SELECT
              id, type, client, version, amount, tx, available, held, total, locked
              FROM pay_pro.event_store
-             WHERE client = $1 and tx = $2
+             WHERE client = $1 and tx = $2 and type = $3
              ORDER BY version DESC LIMIT 1`,
-          [client, tx]
+          [client, tx, TransactionType.DEPOSIT]
         )) as {
           rows: {
             id: number;

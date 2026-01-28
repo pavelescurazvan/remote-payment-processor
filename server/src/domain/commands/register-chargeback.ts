@@ -29,7 +29,7 @@ export const registerChargeback = async ({
     client: transaction.client,
   });
 
-  const disputedTransaction = await repository.transactions.get({
+  const disputedTransaction = await repository.transactions.getDeposit({
     pool,
     client: transaction.client,
     tx: transaction.tx,
