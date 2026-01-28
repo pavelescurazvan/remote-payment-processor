@@ -1,7 +1,11 @@
 import { Repository } from "../../repository/create-postgres-repository";
 import { Transaction, TransactionDto, TransactionType } from "../types";
 import { Pool } from "pg";
-import { InvalidWalletState, TransactionNotFound, CannotDisputeNonDeposit } from "../Errors";
+import {
+  InvalidWalletState,
+  TransactionNotFound,
+  CannotDisputeNonDeposit,
+} from "../Errors";
 
 /**
  * Registers a dispute transaction.

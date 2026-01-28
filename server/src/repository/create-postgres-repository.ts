@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import {TransactionDto, TransactionType} from "../domain/types";
+import { TransactionDto, TransactionType } from "../domain/types";
 
 /**
  * Creates a Postgres Repository

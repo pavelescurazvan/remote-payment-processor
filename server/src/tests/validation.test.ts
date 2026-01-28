@@ -40,7 +40,12 @@ describe("Transaction Validation Tests", () => {
     it("should only allow disputes on deposits", async () => {
       const transactions: Transaction[] = [
         { type: TransactionType.DEPOSIT, client: 1, tx: 100, amount: 1000000 },
-        { type: TransactionType.WITHDRAWAL, client: 1, tx: 101, amount: 500000 },
+        {
+          type: TransactionType.WITHDRAWAL,
+          client: 1,
+          tx: 101,
+          amount: 500000,
+        },
         { type: TransactionType.DISPUTE, client: 1, tx: 101, amount: 0 }, // Try to dispute withdrawal
       ];
 

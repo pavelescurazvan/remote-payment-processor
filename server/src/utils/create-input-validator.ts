@@ -1,13 +1,13 @@
 import { TransactionType, Transaction } from "../domain/types";
 
-export const createInputValidator = () => {
-  type CsvRecord = {
-    type: string;
-    client: string;
-    tx: string;
-    amount?: string;
-  };
+export type CsvRecord = {
+  type: string;
+  client: string;
+  tx: string;
+  amount?: string;
+};
 
+export const createInputValidator = () => {
   /**
    * Parse monetary input into a fixed-point integer (scale = 10^4).
    * Trims whitespace, accepts decimals, truncates beyond 4 places.

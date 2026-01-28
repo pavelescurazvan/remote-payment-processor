@@ -205,8 +205,12 @@ describe("Concurrency Control Tests", () => {
       ]);
 
       // One should succeed, one should fail
-      const successCount = results.filter((r) => r.status === "fulfilled").length;
-      const failureCount = results.filter((r) => r.status === "rejected").length;
+      const successCount = results.filter(
+        (r) => r.status === "fulfilled"
+      ).length;
+      const failureCount = results.filter(
+        (r) => r.status === "rejected"
+      ).length;
 
       expect(successCount).toBe(1);
       expect(failureCount).toBe(1);
@@ -253,7 +257,9 @@ describe("Concurrency Control Tests", () => {
       );
 
       // Only one should succeed
-      const successCount = results.filter((r) => r.status === "fulfilled").length;
+      const successCount = results.filter(
+        (r) => r.status === "fulfilled"
+      ).length;
       expect(successCount).toBe(1);
 
       // Verify version sequence is maintained

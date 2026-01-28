@@ -1,7 +1,11 @@
 import { Repository } from "../../repository/create-postgres-repository";
 import { Transaction, TransactionDto } from "../types";
 import { Pool } from "pg";
-import { InvalidWalletState, TransactionNotFound, TransactionNotDisputed } from "../Errors";
+import {
+  InvalidWalletState,
+  TransactionNotFound,
+  TransactionNotDisputed,
+} from "../Errors";
 
 /**
  * Registers a resolve transaction.
