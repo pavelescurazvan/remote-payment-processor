@@ -4,8 +4,8 @@ import { parse } from "csv-parse";
 
 export const createInputParsers = () => {
   return {
-    parseInput: async () => {
-      const csvFilePath = path.resolve(process.cwd(), "..", "input.csv");
+    parseInput: async (filePath: string) => {
+      const csvFilePath = path.resolve(process.cwd(), "..", filePath);
 
       if (!fs.existsSync(csvFilePath)) {
         throw new Error(`Input file not found: ${csvFilePath}`);

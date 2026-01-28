@@ -28,8 +28,8 @@ export const createService = () => {
     /**
      * Runs the payment processor against an input CSV.
      */
-    run: async () => {
-      const input = await parseInput();
+    run: async (filePath: string) => {
+      const input = await parseInput(filePath);
       const transactions = input.map((record) => validator({ record }));
 
       const clients = await process({ transactions });
