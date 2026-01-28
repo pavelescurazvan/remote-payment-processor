@@ -1,25 +1,107 @@
 # Remote Payment Processor
 
-A remote payment processor with a PostgreSQL database.
+A payment processing engine that reads transactions from a CSV file, processes deposits, withdrawals, disputes, resolves, and chargebacks, and outputs client account states.
+
+## Prerequisites
+
+- **Docker** - For running PostgreSQL database
+- **Docker Compose** - For orchestrating containers
+- **Node.js** (v16 or higher) - For running the TypeScript application
+- **npm** - For package management
 
 ## Getting Started
 
-### Prerequisites
+### 1. Start Database and Migrations
 
-- Docker
-- Docker Compose
-
-### Running the Application
-
-To start the entire stack (Payment Processor, Database, and Migrations), run:
+First, start the PostgreSQL database and run migrations using Docker Compose:
 
 ```bash
-docker-compose up --build
+docker-compose up -d
 ```
 
-### Database
+This will:
+- Start a PostgreSQL database on `localhost:5432`
+- Run database migrations automatically
+- Set up the `pay_pro` schema and event store
 
-The database is exposed on port `5432` on the host machine.
+### 2. Install Dependencies
+
+Navigate to the server directory and install dependencies:
+
+```bash
+cd server
+npm install
+```
+
+### 3. Run the Application
+
+Process the `input.csv` file located in the project root:
+
+```bash
+npm run dev
+```
+
+This will:
+- Read transactions from `../input.csv`
+- Process all transactions (deposits, withdrawals, disputes, resolves, chargebacks)
+- Output client account states in CSV format to the console
+
+**Expected Output Format:**
+```
+client, available, held, total, locked
+1, 134.775, 0, 134.775, false
+2, 165.75, 0, 165.75, true
+...
+```
+
+## Running Tests
+
+Run the integration test suite:
+
+```bash
+npm test
+```
+
+Tests include:
+- CSV validation
+- Transaction processing (deposits, withdrawals, disputes, resolves, chargebacks)
+- Edge cases (idempotency, decimal precision)
+- Full end-to-end processing
+
+## Project Structure
+
+```
+.
+├── input.csv              # Input CSV with transactions
+├── server/
+│   ├── src/
+│   │   ├── domain/        # Business logic and transaction processing
+│   │   ├── repository/    # Database access layer
+│   │   ├── utils/         # CSV parsing and validation
+│   │   └── tests/         # Integration tests
+│   └── package.json
+├── db/                    # Database migrations (Sqitch)
+└── docker-compose.yml     # Docker setup for PostgreSQL
+```
+
+## How It Works
+
+1. **Input**: Reads CSV file with columns: `type, client, tx, amount`
+2. **Processing**: Handles transaction types:
+   - `deposit` - Credits client account
+   - `withdrawal` - Debits client account
+   - `dispute` - Holds funds for disputed transaction
+   - `resolve` - Releases held funds
+   - `chargeback` - Reverses transaction and locks account
+3. **Output**: Displays client account states with:
+   - `available` - Funds available for withdrawal
+   - `held` - Funds held due to disputes
+   - `total` - Total funds (available + held)
+   - `locked` - Account locked due to chargeback
+
+## Database
+
+The PostgreSQL database is exposed on:
 
 - **Host**: `localhost`
 - **Port**: `5432`
@@ -27,18 +109,9 @@ The database is exposed on port `5432` on the host machine.
 - **Password**: `postgres`
 - **Database**: `pay_pro`
 
-## Development
+## Architecture
 
-### Payment Processor
-
-The payment processor is located in the `server/` directory.
-
-```bash
-cd server
-npm install
-npm run dev
-```
-
-### Database Migrations
-
-Migrations are handled in the `db/` directory using Sqitch.
+- **Event Sourcing**: All transactions are stored as immutable events
+- **Event Store**: PostgreSQL table with unique constraint on (client, tx)
+- **Idempotency**: Duplicate transaction IDs are ignored
+- **Precision**: All amounts use 4 decimal place precision (stored as integers)
