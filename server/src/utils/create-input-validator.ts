@@ -45,12 +45,16 @@ export const createInputValidator = () => {
         throw new Error("Missing transaction type");
       }
 
-      if (isNaN(client)) {
-        throw new Error(`Invalid client ID: ${record.client}`);
+      if (isNaN(client) || client < 0 || client > 65535) {
+        throw new Error(
+          `Invalid client ID (must be u16: 0-65535): ${record.client}`
+        );
       }
 
-      if (isNaN(tx)) {
-        throw new Error(`Invalid transaction ID: ${record.tx}`);
+      if (isNaN(tx) || tx < 0 || tx > 4294967295) {
+        throw new Error(
+          `Invalid transaction ID (must be u32: 0-4294967295): ${record.tx}`
+        );
       }
 
       switch (type) {
