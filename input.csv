@@ -143,3 +143,10 @@ chargeback, 9, 1103,
 deposit, 10, 1104, 900.0000
 dispute, 10, 1104,
 resolve, 10, 1104,
+
+dispute, 21, 1060,
+resolve, 21, 1060,
+dispute, 21, 1061,
+resolve, 21, 1061,
+dispute, 21, 1063,
+resolve, 21, 1063,
