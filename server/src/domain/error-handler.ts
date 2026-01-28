@@ -1,3 +1,4 @@
+import { DatabaseError } from "pg";
 import { Transaction } from "./types";
 import { logger } from "../utils/logger";
 
@@ -15,8 +16,9 @@ export const errorHandler = async (
   } catch (e) {
     // Handle idempotency error based on persistence unique constraint
     if (
-      e?.code === "23505" &&
-      e?.constraint === "event_store_client_tx_type_uk"
+      e instanceof DatabaseError &&
+      e.code === "23505" &&
+      e.constraint === "event_store_client_tx_type_uk"
     ) {
       logger(
         `Transaction ${JSON.stringify(input)} already processed. Skipping.`
@@ -24,8 +26,14 @@ export const errorHandler = async (
       return;
     }
 
-    logger(
-      `Error processing transaction ${JSON.stringify(input)}: ${e.message}`
-    );
+    if (e instanceof Error) {
+      logger(
+        `Error processing transaction ${JSON.stringify(input)}: ${e.message}`
+      );
+    } else {
+      logger(
+        `Error processing transaction ${JSON.stringify(input)}: ${String(e)}`
+      );
+    }
   }
 };
