@@ -1,10 +1,11 @@
 import path from "path";
 import fs from "fs";
 import { parse } from "csv-parse";
+import { Validator } from "./create-input-validator";
 
-export const createInputParsers = () => {
+export const createInputParsers = ({ validator }: Validator) => {
   return {
-    parseInput: async (filePath: string) => {
+    parseInput: async function* (filePath: string) {
       const csvFilePath = path.resolve(process.cwd(), "..", filePath);
 
       if (!fs.existsSync(csvFilePath)) {
@@ -20,12 +21,9 @@ export const createInputParsers = () => {
         })
       );
 
-      const results = [];
       for await (const record of parser) {
-        results.push(record);
+        yield validator({ record });
       }
-
-      return results;
     },
   };
 };

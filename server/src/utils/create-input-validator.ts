@@ -104,3 +104,5 @@ export const createInputValidator = () => {
     },
   };
 };
+
+export type Validator = ReturnType<typeof createInputValidator>;

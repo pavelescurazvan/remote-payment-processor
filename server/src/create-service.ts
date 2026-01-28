@@ -9,9 +9,8 @@ import { createRetrieveOutput } from "./domain/create-output-retriever";
  * Creates the payment processor.
  */
 export const createService = () => {
-  const { parseInput } = createInputParsers();
-
   const { validator } = createInputValidator();
+  const { parseInput } = createInputParsers({ validator });
 
   const pool = getConnectionPool();
   const { process } = createTransactionsProcessor({
@@ -29,10 +28,11 @@ export const createService = () => {
      * Runs the payment processor against an input CSV.
      */
     run: async (filePath: string) => {
-      const input = await parseInput(filePath);
-      const transactions = input.map((record) => validator({ record }));
+      const transactionsStream = parseInput(filePath);
 
-      const clients = await process({ transactions });
+      const clients = await process({
+        transactions: transactionsStream,
+      });
 
       await printOutput({ clients });
     },

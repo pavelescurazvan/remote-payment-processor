@@ -78,15 +78,20 @@ export const createTransactionsProcessor = ({
   };
 
   return {
-    process: async ({ transactions }: { transactions: Transaction[] }) => {
+    process: async ({
+      transactions,
+    }: {
+      transactions: AsyncIterable<Transaction>;
+    }) => {
       const clientIds = new Set<number>();
 
-      for (const transaction of transactions) {
+      for await (const transaction of transactions) {
         await errorHandler(processTransaction, transaction);
         clientIds.add(transaction.client);
       }
 
       return clientIds;
     },
+    processTransaction,
   };
 };
