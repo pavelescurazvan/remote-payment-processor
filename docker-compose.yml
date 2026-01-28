@@ -30,18 +30,3 @@ services:
     depends_on:
       db:
         condition: service_healthy
-
-  server:
-    build:
-      context: .
-      dockerfile: server/Dockerfile
-    container_name: pay-pro-server
-    environment:
-      - "DB_HOST=pay-pro-postgres-db"
-      - "DB_PORT=5432"
-      - "DB_NAME=pay_pro"
-      - "DB_USER=postgres"
-      - "DB_PASSWORD=postgres"
-    depends_on:
-      db-migration:
-        condition: service_completed_successfully
